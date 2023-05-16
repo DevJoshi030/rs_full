@@ -7,9 +7,9 @@ mod traits;
 
 pub fn run() {
     grep::run();
-    // lifetimes::run();
-    // traits::run();
-    // generics::run();
-    // errors::run();
-    // misc::run();
+    lifetimes::run();
+    traits::run();
+    generics::run();
+    errors::run();
+    misc::run();
 }
