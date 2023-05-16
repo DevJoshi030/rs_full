@@ -23,7 +23,7 @@ pub fn run() {
         part: first_sentence,
     };
 
-    println!("{:#?}", i);
+    println!("{:#?}", i.part);
 
     let result = longest_with_announcement(str1.as_str(), str2.as_str(), "Test Announcement!!");
     println!("{}", result);

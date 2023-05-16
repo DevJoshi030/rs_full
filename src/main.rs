@@ -1,12 +1,4 @@
-mod errors;
-mod generics;
-mod lifetimes;
-mod misc;
-mod traits;
+use rs_full;
 fn main() {
-    // misc::run();
-    // errors::run();
-    // generics::run();
-    // traits::run();
-    lifetimes::run();
+    rs_full::run();
 }
