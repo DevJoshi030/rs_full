@@ -1,12 +1,15 @@
 use std::{env, fs, process::exit};
 
-struct Config {
-    query: String,
-    filename: String,
+pub struct Config {
+    pub query: String,
+    pub filename: String,
 }
 
 impl Config {
     fn new(args: &Vec<String>) -> Result<Config, &str> {
+        if args.len() > 3 {
+            println!("Only Query and Filename are allowed. Other args will be ignored");
+        }
         let query = match args.get(1) {
             Some(q) => q.clone(),
             None => return Err("No Query Given"),
@@ -17,6 +20,18 @@ impl Config {
         };
 
         Ok(Config { query, filename })
+    }
+}
+
+#[derive(Debug)]
+pub struct Line<'a> {
+    pub index: usize,
+    pub text: &'a str,
+}
+
+impl<'a> PartialEq for Line<'a> {
+    fn eq(&self, other: &Self) -> bool {
+        self.index == other.index && self.text.eq(other.text)
     }
 }
 
@@ -33,18 +48,42 @@ pub fn run() {
     println!("Searching for {}", config.query);
     println!("In file {}", config.filename);
 
-    find(&config).unwrap_or_else(|err| {
+    let content = get_file_content(&config).unwrap_or_else(|err| {
         println!("Problem reading file: {}", config.filename);
         println!("{}", err);
         exit(1);
     });
+
+    let results = search(config.query.as_str(), content.as_str());
+
+    if results.len() == 0 {
+        println!("No results found!!!");
+        exit(0);
+    }
+    println!("Results: <Line Number>. <Text>");
+
+    for line in results {
+        println!("{}. {}", line.index, line.text);
+    }
 }
 
-fn find<'a>(config: &Config) -> Result<(), &'a str> {
+pub fn get_file_content<'a>(config: &Config) -> Result<String, &'a str> {
     let contents = fs::read_to_string(format!("{}", config.filename))
         .unwrap_or_else(|_| return format!("No such file `{}`", config.filename));
 
-    println!("Contents of file: {}", config.filename);
-    println!("{}", contents);
-    Ok(())
+    Ok(contents)
+}
+
+pub fn search<'a>(query: &'a str, content: &'a str) -> Vec<Line<'a>> {
+    let mut results = vec![];
+    for (index, line) in content.lines().enumerate() {
+        if line.contains(query) {
+            results.push(Line {
+                index: index + 1,
+                text: line,
+            });
+        }
+    }
+
+    results
 }
