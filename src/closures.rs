@@ -55,7 +55,7 @@ pub fn run() {
         println!("1: input -> 1");
         expensive_closure.value(1);
         println!("2: input -> 1");
-        expensive_closure.value(2);
+        expensive_closure.value(1);
     } else {
         println!("call expensive operation 3 times");
         println!("1: input -> 1");
