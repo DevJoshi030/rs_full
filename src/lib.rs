@@ -1,3 +1,4 @@
+mod closures;
 mod errors;
 mod generics;
 pub mod grep;
@@ -6,6 +7,7 @@ pub mod misc;
 mod traits;
 
 pub fn run() {
+    closures::run();
     grep::run();
     lifetimes::run();
     traits::run();
