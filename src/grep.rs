@@ -67,9 +67,13 @@ pub fn run() {
     }
 }
 
-pub fn get_file_content<'a>(config: &Config) -> Result<String, &'a str> {
-    let contents = fs::read_to_string(format!("{}", config.filename))
-        .unwrap_or_else(|_| return format!("No such file `{}`", config.filename));
+pub fn get_file_content(config: &Config) -> Result<String, String> {
+    let contents = match fs::read_to_string(&config.filename) {
+        Ok(c) => c,
+        Err(_) => {
+            return Err(format!("No such file `{}`", &config.filename));
+        }
+    };
 
     Ok(contents)
 }
