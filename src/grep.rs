@@ -1,25 +1,35 @@
+use regex::Regex;
 use std::{env, fs, process::exit};
 
 pub struct Config {
     pub query: String,
     pub filename: String,
+    pub ignore_case: bool,
 }
 
 impl Config {
-    fn new(args: &Vec<String>) -> Result<Config, &str> {
+    fn new(mut args: env::Args) -> Result<Config, &'static str> {
         if args.len() > 3 {
             println!("Only Query and Filename are allowed. Other args will be ignored");
         }
-        let query = match args.get(1) {
-            Some(q) => q.clone(),
+
+        args.next();
+        let query = match args.next() {
+            Some(q) => q,
             None => return Err("No Query Given"),
         };
-        let filename = match args.get(2) {
+        let filename = match args.next() {
             Some(f) => f.clone(),
             None => return Err("No Filename Given"),
         };
 
-        Ok(Config { query, filename })
+        let ignore_case = env::var("IGNORE_CASE").is_ok();
+
+        Ok(Config {
+            query,
+            filename,
+            ignore_case,
+        })
     }
 }
 
@@ -36,11 +46,9 @@ impl<'a> PartialEq for Line<'a> {
 }
 
 pub fn run() {
-    println!("Grep Remade");
+    println!("Grep Remade!!!");
 
-    let args: Vec<String> = env::args().collect();
-
-    let config = Config::new(&args).unwrap_or_else(|err| {
+    let config = Config::new(env::args()).unwrap_or_else(|err| {
         println!("Problem parsing args: {}", err);
         exit(1);
     });
@@ -48,13 +56,17 @@ pub fn run() {
     println!("Searching for {}", config.query);
     println!("In file {}", config.filename);
 
+    if config.ignore_case {
+        println!("Ignoring Case");
+    }
+
     let content = get_file_content(&config).unwrap_or_else(|err| {
         println!("Problem reading file: {}", config.filename);
         println!("{}", err);
         exit(1);
     });
 
-    let results = search(config.query.as_str(), content.as_str());
+    let results = search(config.query.as_str(), content.as_str(), config.ignore_case);
 
     if results.len() == 0 {
         println!("No results found!!!");
@@ -78,16 +90,31 @@ pub fn get_file_content(config: &Config) -> Result<String, String> {
     Ok(contents)
 }
 
-pub fn search<'a>(query: &'a str, content: &'a str) -> Vec<Line<'a>> {
-    let mut results = vec![];
-    for (index, line) in content.lines().enumerate() {
-        if line.contains(query) {
-            results.push(Line {
-                index: index + 1,
-                text: line,
-            });
-        }
+pub fn search<'a>(query: &'a str, content: &'a str, ignore_case: bool) -> Vec<Line<'a>> {
+    let re = generate_regex(query, ignore_case);
+    content
+        .lines()
+        .enumerate()
+        .filter(|(_, text)| re.is_match(text))
+        .map(|(index, text)| Line {
+            index: index + 1,
+            text,
+        })
+        .collect()
+}
+
+fn generate_regex(query: &str, ignore_case: bool) -> Regex {
+    let mut regex_query = String::new();
+
+    if ignore_case {
+        regex_query.push_str(r"(?i:");
     }
 
-    results
+    regex_query.push_str(query);
+
+    if ignore_case {
+        regex_query.push_str(r")");
+    }
+
+    Regex::new(regex_query.as_str()).unwrap()
 }
