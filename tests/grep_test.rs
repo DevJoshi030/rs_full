@@ -13,6 +13,6 @@ Pick three.";
             index: 2,
             text: "safe, fast, productive."
         }],
-        rs_full::grep::search(query, contents)
+        rs_full::grep::search(query, contents, true)
     );
 }
