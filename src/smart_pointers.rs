@@ -1,4 +1,7 @@
-pub enum List<T>
+use std::{fmt::Display, ops::Deref};
+
+use List::{Cons, Nil};
+enum List<T>
 where
     T: Display,
 {
@@ -22,9 +25,20 @@ where
     }
 }
 
-use std::fmt::Display;
+struct MyBox<T>(T);
 
-use List::{Cons, Nil};
+impl<T> MyBox<T> {
+    fn new(x: T) -> MyBox<T> {
+        MyBox(x)
+    }
+}
+
+impl<T> Deref for MyBox<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 pub fn run() {
     println!("Smart Pointers!!!");
@@ -36,4 +50,9 @@ pub fn run() {
     let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
 
     println!("List = {}", list);
+
+    let x = 5;
+    let y = MyBox::new(x);
+
+    println!("x -> {} and y -> {}", x, *y);
 }
