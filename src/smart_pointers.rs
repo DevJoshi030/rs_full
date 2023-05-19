@@ -16,7 +16,7 @@ where
                 Cons(..) => print!("{} -> {}", x, y),
                 Nil => print!("{} -> END", x),
             },
-            Nil => println!(),
+            _ => (),
         }
         Ok(())
     }
