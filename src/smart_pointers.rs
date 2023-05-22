@@ -1,11 +1,11 @@
-use std::{fmt::Display, ops::Deref, rc::Rc};
+use std::{cell::RefCell, fmt::Display, ops::Deref, rc::Rc};
 
 use List::{Cons, Nil};
 enum List<T>
 where
     T: Display,
 {
-    Cons(T, Rc<List<T>>),
+    Cons(Rc<RefCell<T>>, Rc<List<T>>),
     Nil,
 }
 
@@ -16,8 +16,10 @@ where
     fn fmt(&self, _: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Cons(x, y) => match **y {
-                Cons(..) => print!("{} -> {}", x, y),
-                Nil => print!("{} -> END", x),
+                Cons(..) => {
+                    print!("{} -> {}", *x.deref().borrow(), y)
+                }
+                Nil => print!("{} -> END", *x.deref().borrow()),
             },
             _ => (),
         }
@@ -62,7 +64,13 @@ pub fn run() {
 
     println!("b -> {}", b);
 
-    let list = Cons(1, Rc::new(Cons(2, Rc::new(Cons(3, Rc::new(Nil))))));
+    let list = Cons(
+        Rc::new(RefCell::new(1)),
+        Rc::new(Cons(
+            Rc::new(RefCell::new(2)),
+            Rc::new(Cons(Rc::new(RefCell::new(3)), Rc::new(Nil))),
+        )),
+    );
 
     println!("List = {}", list);
 
@@ -71,14 +79,17 @@ pub fn run() {
 
     println!("x -> {} and y -> {}", x, *y);
 
-    let a = Rc::new(Cons(5, Rc::new(Cons(10, Rc::new(Nil)))));
+    let a = Rc::new(Cons(
+        Rc::new(RefCell::new(5)),
+        Rc::new(Cons(Rc::new(RefCell::new(10)), Rc::new(Nil))),
+    ));
     println!("a -> {}", a);
     println!("Reference Counter: {}", Rc::strong_count(&a));
-    let b = Cons(3, Rc::clone(&a));
+    let b = Cons(Rc::new(RefCell::new(3)), Rc::clone(&a));
     println!("b -> {}", b);
     println!("Reference Counter: {}", Rc::strong_count(&a));
     {
-        let c = Cons(4, Rc::clone(&a));
+        let c = Cons(Rc::new(RefCell::new(4)), Rc::clone(&a));
         println!("c -> {}", c);
         println!("Reference Counter: {}", Rc::strong_count(&a));
     }

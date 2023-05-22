@@ -6,9 +6,11 @@ mod iterators;
 mod lifetimes;
 pub mod misc;
 mod smart_pointers;
+mod smart_pointers_2;
 mod traits;
 
 pub fn run() {
+    smart_pointers_2::run();
     smart_pointers::run();
     iterators::run();
     closures::run();
