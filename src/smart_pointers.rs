@@ -25,18 +25,33 @@ where
     }
 }
 
-struct MyBox<T>(T);
+struct MyBox<T: Display>(T);
 
-impl<T> MyBox<T> {
+impl<T> MyBox<T>
+where
+    T: Display,
+{
     fn new(x: T) -> MyBox<T> {
         MyBox(x)
     }
 }
 
-impl<T> Deref for MyBox<T> {
+impl<T> Deref for MyBox<T>
+where
+    T: Display,
+{
     type Target = T;
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl<T> Drop for MyBox<T>
+where
+    T: Display,
+{
+    fn drop(&mut self) {
+        println!("Dropping the MyBox: {}", &self.0);
     }
 }
 
