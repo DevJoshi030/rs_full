@@ -1,11 +1,11 @@
-use std::{fmt::Display, ops::Deref};
+use std::{fmt::Display, ops::Deref, rc::Rc};
 
 use List::{Cons, Nil};
 enum List<T>
 where
     T: Display,
 {
-    Cons(T, Box<List<T>>),
+    Cons(T, Rc<List<T>>),
     Nil,
 }
 
@@ -62,7 +62,7 @@ pub fn run() {
 
     println!("b -> {}", b);
 
-    let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
+    let list = Cons(1, Rc::new(Cons(2, Rc::new(Cons(3, Rc::new(Nil))))));
 
     println!("List = {}", list);
 
@@ -70,4 +70,17 @@ pub fn run() {
     let y = MyBox::new(x);
 
     println!("x -> {} and y -> {}", x, *y);
+
+    let a = Rc::new(Cons(5, Rc::new(Cons(10, Rc::new(Nil)))));
+    println!("a -> {}", a);
+    println!("Reference Counter: {}", Rc::strong_count(&a));
+    let b = Cons(3, Rc::clone(&a));
+    println!("b -> {}", b);
+    println!("Reference Counter: {}", Rc::strong_count(&a));
+    {
+        let c = Cons(4, Rc::clone(&a));
+        println!("c -> {}", c);
+        println!("Reference Counter: {}", Rc::strong_count(&a));
+    }
+    println!("Reference Counter: {}", Rc::strong_count(&a));
 }
