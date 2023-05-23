@@ -4,6 +4,7 @@ mod generics;
 pub mod grep;
 mod iterators;
 mod lifetimes;
+mod message_passing;
 pub mod misc;
 mod smart_pointers;
 mod smart_pointers_2;
@@ -11,6 +12,7 @@ mod threads;
 mod traits;
 
 pub fn run() {
+    message_passing::run();
     threads::run();
     smart_pointers_2::run();
     smart_pointers::run();
