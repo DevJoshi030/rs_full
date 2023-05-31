@@ -11,11 +11,13 @@ mod shared_state;
 mod smart_pointers;
 mod smart_pointers_2;
 mod state_design;
+mod state_design_with_enums;
 mod threads;
 mod trait_objects;
 mod traits;
 
 pub fn run() {
+    state_design_with_enums::run();
     state_design::run();
     trait_objects::run();
     object_oriented::run();
