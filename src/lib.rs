@@ -6,6 +6,7 @@ mod iterators;
 mod lifetimes;
 mod message_passing;
 pub mod misc;
+mod object_oriented;
 mod shared_state;
 mod smart_pointers;
 mod smart_pointers_2;
@@ -13,6 +14,7 @@ mod threads;
 mod traits;
 
 pub fn run() {
+    object_oriented::run();
     shared_state::run();
     message_passing::run();
     threads::run();
