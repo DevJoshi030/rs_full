@@ -11,9 +11,11 @@ mod shared_state;
 mod smart_pointers;
 mod smart_pointers_2;
 mod threads;
+mod trait_objects;
 mod traits;
 
 pub fn run() {
+    trait_objects::run();
     object_oriented::run();
     shared_state::run();
     message_passing::run();
