@@ -4,6 +4,7 @@ mod generics;
 pub mod grep;
 mod iterators;
 mod lifetimes;
+mod macros;
 mod message_passing;
 pub mod misc;
 mod object_oriented;
@@ -17,6 +18,7 @@ mod trait_objects;
 mod traits;
 
 pub fn run() {
+    macros::run();
     state_design_with_enums::run();
     state_design::run();
     trait_objects::run();
