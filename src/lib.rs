@@ -16,8 +16,10 @@ mod state_design_with_enums;
 mod threads;
 mod trait_objects;
 mod traits;
+mod web_server;
 
 pub fn run() {
+    web_server::run();
     macros::run();
     state_design_with_enums::run();
     state_design::run();
